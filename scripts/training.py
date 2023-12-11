@@ -16,8 +16,10 @@ from Simple_Shapes_RL.Env import Simple_Env
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[64, 64, 64], vf=[128, 128, 128])])
 
+current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+
 CONFIG = {
-    "models_path": {'VAE': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
+    "models_path": {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
     "mode": "GW_attributes",
     "model": "PPO",
     "total_timesteps": 1e7,

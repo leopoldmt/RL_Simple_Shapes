@@ -13,7 +13,7 @@ MODE = {'attr': ['attr'],
         'GWv': ['GWattr', 'GWv']
         }
 
-pos_mode={'attr_from_attr': 0, 'v_from_v': 1, 'GWattr_from_GWattr': 3, 'GWv_from_GWv': 4, 'GWattr_from_GWv': 6, 'Gwv_from_GWattr': 7}
+pos_mode = {'attr_from_attr': 0, 'v_from_v': 1, 'GWattr_from_GWattr': 3, 'GWv_from_GWv': 4, 'GWattr_from_GWv': 6, 'Gwv_from_GWattr': 7}
 
 if __name__ == '__main__':
 
