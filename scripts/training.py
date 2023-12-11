@@ -6,18 +6,18 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import set_random_seed
 
 from gymnasium.wrappers import TimeLimit, FrameStack
-from utils import NRepeat
+from Simple_Shapes_RL.utils import NRepeat
 import os
 import torch
 import numpy as np
 
-from Env import Simple_Env
+from Simple_Shapes_RL.Env import Simple_Env
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[64, 64, 64], vf=[128, 128, 128])])
 
 CONFIG = {
-    "models_path": {'VAE': '822888/epoch=282-step=1105680.ckpt', 'GW': 'GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': 'xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
+    "models_path": {'VAE': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
     "mode": "GW_attributes",
     "model": "PPO",
     "total_timesteps": 1e7,
@@ -70,13 +70,6 @@ if __name__ == '__main__':
     #     sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
     #     monitor_gym=True,  # auto-upload the videos of agents playing the game
     # )
-
-    # vae = VAE.load_from_checkpoint(
-    #     '822888/epoch=282-step=1105680.ckpt',
-    #     strict=False,
-    # )
-    #
-    # domains = {'v': vae.eval(), 'attr': SimpleShapesAttributes(32).eval()}
 
     seed = np.random.randint(0, 1000)
     env = DummyVecEnv([make_env(i, seed=seed) for i in range(CONFIG['n_envs'])])

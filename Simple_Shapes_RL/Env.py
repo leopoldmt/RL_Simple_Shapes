@@ -18,7 +18,7 @@ import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.core import ObsType, RenderFrame
 
-from utils import get_obs_space, get_action_space, generate_new_attributes, generate_new_target, generate_image
+from Simple_Shapes_RL.utils import get_obs_space, get_action_space, generate_new_attributes, generate_new_target, generate_image
 from bim_gw.modules.domain_modules import VAE
 from bim_gw.modules.domain_modules.simple_shapes import SimpleShapesAttributes
 from bim_gw.modules import GlobalWorkspace

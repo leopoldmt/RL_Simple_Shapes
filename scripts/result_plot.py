@@ -5,7 +5,7 @@ import os
 import glob
 
 current_directory = os.getcwd()
-PATH = '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/results/inference/'
+PATH = '/results/inference/'
 
 MODE = {'attr': ['attr'],
         'v': ['v'],

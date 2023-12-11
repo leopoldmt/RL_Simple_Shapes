@@ -3,13 +3,13 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 
 from gymnasium.wrappers import TimeLimit, FrameStack
-from utils import NRepeat
+from Simple_Shapes_RL.utils import NRepeat
 
 import torch
 import numpy as np
 import wandb
 
-from Env import Simple_Env
+from Simple_Shapes_RL.Env import Simple_Env
 
 from bim_gw.modules.domain_modules import VAE
 from bim_gw.modules.domain_modules.simple_shapes import SimpleShapesAttributes
@@ -32,13 +32,13 @@ CONFIG = {
 if __name__ == '__main__':
 
     vae = VAE.load_from_checkpoint(
-        '822888/epoch=282-step=1105680.ckpt',
+        'Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
         strict=False,
     )
 
     domains = {'v': vae.eval(), 'attr': SimpleShapesAttributes(32).eval()}
 
-    gw = GlobalWorkspace.load_from_checkpoint('xbyve6cr/checkpoints/epoch=96-step=189538.ckpt', domain_mods=domains,
+    gw = GlobalWorkspace.load_from_checkpoint('Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt', domain_mods=domains,
                                               strict=False).eval()
 
     models = {'VAE': vae, 'GW': gw}

@@ -3,13 +3,13 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 
 from gymnasium.wrappers import TimeLimit, FrameStack
-from utils import NRepeat
+from Simple_Shapes_RL.utils import NRepeat
 
 import torch
 import numpy as np
 import os
 
-from Env import Simple_Env
+from Simple_Shapes_RL.Env import Simple_Env
 
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
@@ -33,12 +33,12 @@ MODE = {'attributes': ['attributes'],
 
 MODE_PATH = {'attributes': 'attr', 'vision': 'v', 'GW_attributes': 'GWattr', 'GW_vision': 'GWv'}
 
-current_directory = os.getcwd()
+current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 
 
 if __name__ == '__main__':
 
-    models_path = {'VAE': '822888/epoch=282-step=1105680.ckpt', 'GW': 'xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
+    models_path = {'VAE': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
 
     for mode in MODE[CONFIG['mode']]:
         env = Simple_Env(render_mode=None, task='position_rotation', obs_mode=mode, model_path=models_path)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         env = Monitor(env, allow_early_resets=True)
         env = DummyVecEnv([lambda: env])
 
-        model = PPO.load(f"/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/models/{CONFIG['checkpoint']}/model")
+        model = PPO.load(f"/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/models/{CONFIG['checkpoint']}/model")
 
         obs = env.reset()
 

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from typing import cast
 
-from utils import generate_image, generate_new_attributes
+from Simple_Shapes_RL.utils import generate_image, generate_new_attributes
 
 
 if __name__ == '__main__':
