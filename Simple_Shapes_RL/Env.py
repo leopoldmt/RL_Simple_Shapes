@@ -4,7 +4,7 @@ import pygame
 import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.backends.backend_agg as agg
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 import io
 import time
 from typing import cast
@@ -26,7 +26,7 @@ from bim_gw.modules import GlobalWorkspace
 
 class Simple_Env(gym.Env):
 
-    def __init__(self, render_mode=None, task='position', obs_mode='attributes', target_mode='fixed', model_path=None):
+    def __init__(self, render_mode=None, task='position', obs_mode='attributes', target_mode='fixed', model_path=None, normalize=None):
 
         self.obs_mode = obs_mode.split('_')
         self.model = {'VAE': None, 'GW': None}
@@ -53,6 +53,7 @@ class Simple_Env(gym.Env):
 
         self.window = None
         self.clock = None
+        self.normalize = normalize
 
         self._action_to_direction = {
             0: np.array([0, 0, 0]),
@@ -290,12 +291,16 @@ class Simple_Env(gym.Env):
             }
             # encode attributes_u to GW
             attr_gw = self.model['GW'].encode(attr_u, 'attr').detach().cpu().numpy()
+            if self.normalize is not None:
+                attr_gw = (attr_gw - self.normalize['mean']) / self.normalize['std']
             return attr_gw
         elif obs_from == 'vision':
             # encode vision to unimodal latent
             img = self._get_vision(mode)
             # encode vision_u to GW
             img_gw = self.model['GW'].encode({'z_img': torch.tensor(img).to("cuda:0")}, 'v').detach().cpu().numpy()
+            if self.normalize is not None:
+                img_gw = (img_gw - self.normalize['mean']) / self.normalize['std']
             return img_gw
 
     def _get_info(self):
