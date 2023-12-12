@@ -220,7 +220,7 @@ class Simple_Env(gym.Env):
 
         attr_enc = torch.zeros(8)
         attr_enc[0:2] = torch.tensor(attr[1:3] / 32)
-        attr_enc[2] = torch.tensor(attr[3] / 14)
+        attr_enc[2] = torch.tensor((attr[3] - 7) / 14)
         attr_enc[3] = (np.cos(attr[4]) + 1) / 2
         attr_enc[4] = (np.sin(attr[4]) + 1) / 2
         attr_enc[5:8] = torch.tensor(attr[5:8] / 255.)
@@ -236,7 +236,7 @@ class Simple_Env(gym.Env):
         attr_enc = torch.zeros(8)
         attr_enc[0] = torch.tensor(self.target[0] / 32)
         attr_enc[1] = torch.tensor(self.target[1] / 32)
-        attr_enc[2] = torch.tensor(attr[3] / 14)
+        attr_enc[2] = torch.tensor((attr[3] - 7) / 14)
         attr_enc[3] = (np.cos(self.target[2]) + 1) / 2
         attr_enc[4] = (np.sin(self.target[2]) + 1) / 2
         attr_enc[5:8] = torch.tensor(attr[5:8] / 255.)
