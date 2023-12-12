@@ -34,7 +34,7 @@ MODE = {'attributes': ['attributes'],
 
 MODE_PATH = {'attributes': 'attr', 'vision': 'v', 'GW_attributes': 'GWattr', 'GW_vision': 'GWv'}
 
-current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+current_directory = os.getcwd()
 
 
 if __name__ == '__main__':

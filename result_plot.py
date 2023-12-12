@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import glob
 
-current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+current_directory = os.getcwd()
 PATH = '/results/inference/'
 
 MODE = {'attr': ['attr'],

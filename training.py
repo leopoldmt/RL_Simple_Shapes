@@ -18,7 +18,7 @@ from Simple_Shapes_RL.Env import Simple_Env
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[64, 64, 64], vf=[128, 128, 128])])
 
-current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+current_directory = os.getcwd()
 
 NORM_GW_CONT = {'mean': np.array([0.011346655145489494,
                                   0.018906326077828415,
