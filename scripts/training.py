@@ -22,6 +22,7 @@ CONFIG = {
     "models_path": {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
     "mode": "GW_attributes",
     "model": "PPO",
+    "task": "position_rotation",
     "total_timesteps": 1e7,
     "shape": "(16,16)",
     "target": "fixed",
@@ -42,7 +43,7 @@ CONFIG = {
 
 def make_env(rank, seed = 0, monitor_dir=None, wrapper_class=None, monitor_kwargs=None, wrapper_kwargs=None):
     def _init():
-        env = Simple_Env(render_mode=None, task='position_rotation', obs_mode=CONFIG['mode'], target_mode=CONFIG['target'], model_path=CONFIG['models_path'])
+        env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=CONFIG['mode'], target_mode=CONFIG['target'], model_path=CONFIG['models_path'])
         env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
         env = NRepeat(env, num_frames=CONFIG['n_repeats'])
         env = FrameStack(env, 4)

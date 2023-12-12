@@ -17,6 +17,7 @@ policy_kwargs = dict(activation_fn=torch.nn.ReLU,
 CONFIG = {
     "mode": "GW_vision",
     "model": "PPO",
+    "task": "position_rotation",
     "total_timesteps": 1e6,
     "shape": "(16,16)",
     "target": "fixed",
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
 
     for mode in MODE[CONFIG['mode']]:
-        env = Simple_Env(render_mode=None, task='position_rotation', obs_mode=mode, model_path=models_path)
+        env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=mode, model_path=models_path)
         env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
         env = NRepeat(env, num_frames=CONFIG['n_repeats'])
         env = FrameStack(env, 2)
