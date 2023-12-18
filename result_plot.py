@@ -3,6 +3,9 @@ import pandas as csv
 import matplotlib.pyplot as plt
 import os
 import glob
+from matplotlib import rcParams
+from copy import copy
+
 
 current_directory = os.getcwd()
 PATH = '/results/inference/'
@@ -10,17 +13,75 @@ PATH = '/results/inference/'
 MODE = {'attr': ['attr'],
         'v': ['v'],
         'GWattr': ['GWattr', 'Gwv'],
-        'GWv': ['GWattr', 'GWv']
+        'GWv': ['GWattr', 'GWv'],
+        'CLIPattr': ['CLIPattr', 'CLIPv'],
+        'CLIPv': ['CLIPattr', 'CLIPv'],
+        'GWsupattr': ['GWsupattr', 'GWsupv'],
         }
 
-pos_mode = {'attr_from_attr': 0, 'v_from_v': 1, 'GWattr_from_GWattr': 3, 'GWv_from_GWv': 4, 'GWattr_from_GWv': 6, 'Gwv_from_GWattr': 7}
+pos_mode = {'attr_from_attr': 0,
+            'v_from_v': 1,
+
+            'GWattr_from_GWattr': 3,
+            'GWv_from_GWv': 4,
+
+            'Gwv_from_GWattr': 6,
+            'GWattr_from_GWv': 7,
+
+            'CLIPattr_from_CLIPattr': 9,
+            'CLIPv_from_CLIPv': 10,
+
+            'CLIPv_from_CLIPattr': 12,
+            'CLIPattr_from_CLIPv': 13,
+
+
+            'GWsupattr_from_GWsupattr': 15,
+            'GWsupv_from_GWsupattr': 16
+            }
+
+first_colors = {'attr_from_attr': '#1f77b4',
+                'v_from_v': '#ff7f0e',
+
+                'GWattr_from_GWattr': '#2ca02c',
+                'GWv_from_GWv': '#d62728',
+
+                'Gwv_from_GWattr': '#2ca02c',
+                'GWattr_from_GWv': '#d62728',
+
+                'CLIPattr_from_CLIPattr': '#9467bd',
+                'CLIPv_from_CLIPv': '#8c564b',
+
+                'CLIPv_from_CLIPattr': '#9467bd',
+                'CLIPattr_from_CLIPv': '#8c564b',
+
+                'GWsupattr_from_GWsupattr': '#e377c2',
+                'GWsupv_from_GWsupattr': '#e377c2'}
+
+second_colors = {'attr_from_attr': '#1f77b4',
+                 'v_from_v': '#ff7f0e',
+
+                 'GWattr_from_GWattr': '#2ca02c',
+                 'GWv_from_GWv': '#d62728',
+
+                 'Gwv_from_GWattr': '#d62728',
+                 'GWattr_from_GWv': '#2ca02c',
+
+                 'CLIPattr_from_CLIPattr': '#9467bd',
+                 'CLIPv_from_CLIPv': '#8c564b',
+
+                 'CLIPv_from_CLIPattr': '#8c564b',
+                 'CLIPattr_from_CLIPv': '#9467bd',
+
+                 'GWsupattr_from_GWsupattr': '#e377c2',
+                 'GWsupv_from_GWsupattr': '#7f7f7f'}
 
 if __name__ == '__main__':
 
     if PATH.split('/')[-2] == 'inference':
         fig, axs = plt.subplots(2, layout="constrained")
         j = 0
-        folders = ['attr', 'v', 'GWattr', 'GWv']
+        folders = ['attr', 'v', 'GWattr', 'GWv', 'CLIPattr', 'CLIPv']
+        # folders = ['GWattr']
         for folder in folders:
             path = 'results/inference/' + folder + '/'
             extension = 'npy'
@@ -44,10 +105,13 @@ if __name__ == '__main__':
                     lenght[i] = np.load(current_directory + '/results/inference/' + folder + '/' + file)
 
                 j = pos_mode[name]
-                axs[0].bar(j, reward.mean(), yerr=reward.std(), label=name)
+                reward = reward.mean(axis=1)
+                lenght = lenght.mean(axis=1)
+                rcParams['hatch.linewidth'] = 2
+                axs[0].bar(j, reward.mean(), yerr=reward.std(), label=name, facecolor=first_colors[name], edgecolor=second_colors[name], hatch='//')
                 axs[0].set_title('Inference reward')
                 axs[0].set_ylabel('Reward')
-                axs[1].bar(j, lenght.mean(), yerr=lenght.std(), label=name)
+                axs[1].bar(j, lenght.mean(), yerr=reward.std(), label=name, facecolor=first_colors[name], edgecolor=second_colors[name], hatch='//')
                 axs[1].set_title('Inference episode length')
                 axs[1].set_ylabel('Episode length')
                 # j += 1
@@ -55,12 +119,14 @@ if __name__ == '__main__':
         handles, labels = axs[0].get_legend_handles_labels()
         fig.legend(handles, labels, loc='lower center', ncol=3, borderaxespad=0.)
         fig.tight_layout()
-        plt.show()
+        fig.subplots_adjust(bottom=0.15)
+        # plt.show()
+        plt.savefig("/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/results/inference/results.pdf", format="pdf")
         print('done')
 
     else:
         fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-        folders = ['attr', 'v', 'GWattr', 'GWv']
+        folders = ['attr', 'v', 'GWattr', 'GWv', 'CLIPattr']
         for folder in folders:
             path = 'results/' + folder + '/'
             extension = 'csv'

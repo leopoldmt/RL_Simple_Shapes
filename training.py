@@ -1,6 +1,7 @@
 from stable_baselines3 import PPO
 from stable_baselines3 import DDPG
 from stable_baselines3 import DQN
+from sb3_contrib import RecurrentPPO
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import set_random_seed
@@ -54,7 +55,7 @@ CONFIG = {
     "normalize": NORM_GW_CONT,
     "total_timesteps": 1e7,
     "shape": "(16,16)",
-    "target": "fixed",
+    "target": "random_GW_attributes",
     "episode_len": 100,
     "n_steps": 16384,
     "num_epochs": 15,
@@ -121,6 +122,8 @@ if __name__ == '__main__':
                 verbose=1,
                 tensorboard_log=f"runs/{run.id}"
     )
+
+    # model = RecurrentPPO("MlpLstmPolicy", env, verbose=1, tensorboard_log=f"runs/{run.id}")
 
     model.learn(total_timesteps=CONFIG['total_timesteps'],
         progress_bar=True,

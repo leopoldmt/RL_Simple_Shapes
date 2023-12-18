@@ -113,14 +113,14 @@ class Simple_Env(gym.Env):
 
         # print(self.attributes)
 
-        #compute reward
-        reward = self._get_task_reward(self.task)
-
-        #compute terminated
-        terminated, reward = self._get_task_terminated(self.task, reward)
-
         observation = self._get_obs()
         info = self._get_info()
+
+        # compute reward
+        reward = self._get_task_reward(self.task, observation)
+
+        # compute terminated
+        terminated, reward = self._get_task_terminated(self.task, reward)
 
         # margin = 14 // 2
         # if self.attributes[1] < margin or self.attributes[1] > 32 - margin or self.attributes[2] < margin or self.attributes[2] > 32 - margin:
@@ -315,13 +315,14 @@ class Simple_Env(gym.Env):
         else:
             return {}
 
-    def _get_task_reward(self, task):
+    def _get_task_reward(self, task, obs):
         reward_pos = -np.linalg.norm(self.attributes[1:3] - self.target[:2])
         angle_vec = np.array([np.cos(self.attributes[4]), np.sin(self.attributes[4])])
         target_vec = np.array([np.cos(self.target[2]), np.sin(self.target[2])])
         reward_rot = -np.abs(np.arccos(np.clip(np.dot(angle_vec, target_vec), -1.0, 1.0)))
         # reward_rot = np.abs(self.attributes[4] - self.target[2])
         # reward_rot = -(reward_rot - np.pi * (reward_rot > np.pi))
+        # return -((obs[:len(obs) // 2] - obs[len(obs) // 2:]) ** 2).mean()
         return reward_pos + 10 * reward_rot
 
     def _get_task_terminated(self, task, reward):
@@ -330,6 +331,10 @@ class Simple_Env(gym.Env):
         target_vec = np.array([np.cos(self.target[2]), np.sin(self.target[2])])
         terminated_rot = np.arccos(np.clip(np.dot(angle_vec, target_vec), -1.0, 1.0)) < np.pi/32
         terminated = terminated_pos and terminated_rot
+        # reward = reward + 10 * terminated
+        # if np.any(((14 // 2) > self.attributes[1:3]) | (self.attributes[1:3] > (32 - 14 // 2))):
+        #     reward -= 10
+        #     terminated = True
         if task == 'sparse':
             reward = 1 * terminated
         # reward += 1000 * terminated

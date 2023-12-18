@@ -23,7 +23,7 @@ CONFIG = {
     "target": "fixed",
     "episode_len": 100,
     'n_repeats': 1,
-    'checkpoint': 'z9okqbwc'
+    'checkpoint': 'd6ftaacg'
 }
 
 MODE = {'attributes': ['attributes'],
@@ -34,7 +34,7 @@ MODE = {'attributes': ['attributes'],
 
 MODE_PATH = {'attributes': 'attr', 'vision': 'v', 'GW_attributes': 'GWattr', 'GW_vision': 'GWv'}
 
-current_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+current_directory = os.getcwd()
 
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=CONFIG['mode'], model_path=models_path)
     env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
     env = NRepeat(env, num_frames=CONFIG['n_repeats'])
-    env = FrameStack(env, 2)
+    env = FrameStack(env, 4)
     env = Monitor(env, allow_early_resets=True)
     env = DummyVecEnv([lambda: env])
 
