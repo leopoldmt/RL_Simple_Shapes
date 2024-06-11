@@ -17,21 +17,13 @@ pip install -e .
 pip install git+https://github.com/porthok/RL_Simple_Shapes.git
 ```
 
-## Configurations
+## Scripts
 
-They can be found in `config/`.
+## Environment
 
-It contains `config/main.yaml` which is the source configuration file. To use
-different values,
-create a new `config/local.yaml` with updated values.
+## Simple Shapes
 
-You can also create a `config/debug.yaml` which will only be loaded if
-the `DEBUG` environment
-variable is set to `1`.
-
-When installing the project, copy the folder `config` to a folder of your
-choosing, and set the environment
-variable `BIMGW_CONFIG_PATH` to the path of the folder.
+## Checkpoints
 
 ## Structure
 
