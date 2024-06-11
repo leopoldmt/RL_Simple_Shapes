@@ -46,14 +46,14 @@ NORM_GW_CONT = {'mean': np.array([0.011346655145489494,
 CONFIG = {
     "mode": "GW_vision",
     "model": "PPO",
-    "normalize": None,
+    "normalize": NORM_GW_CONT,
     "task": "position_rotation",
     "total_timesteps": 1e6,
     "shape": "(16,16)",
     "target": "fixed",
     "episode_len": 100,
     'n_repeats': 1,
-    'checkpoint': '9zixbcbh'
+    'checkpoint': 'ht3ebgdl'
 }
 
 MODE = {'attributes': ['attributes'],
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
                    'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}
     # models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
-    #                'GW': f'{current_directory}/Simple_Shapes_RL/GW_trad_cont_xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
+    #                'GW': f'{current_directory}/Simple_Shapes_RL/GW_trad_cont_xmkeoe5m/checkpoints/epoch=99-step=195400.ckpt'}
 
     for mode in MODE[CONFIG['mode']]:
         env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=mode, model_path=models_path, normalize=CONFIG['normalize'])
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         env = Monitor(env, allow_early_resets=True)
         env = DummyVecEnv([lambda: env])
 
-        model = PPO.load(f"/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/models/{CONFIG['checkpoint']}/model")
+        model = PPO.load(f"/home/leopold/Documents/Projets/RL/RL_Simple_Shapes/models/CLIP/{CONFIG['checkpoint']}/model")
 
         obs = env.reset()
 

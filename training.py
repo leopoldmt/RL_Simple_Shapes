@@ -68,7 +68,7 @@ CONFIG = {
     "vf_coef": 0.5,
     "ent_coef": 0.,
     'n_repeats': 1,
-    'n_envs': 8,
+    'n_envs': 2,
 }
 
 def make_env(rank, seed = 0, monitor_dir=None, wrapper_class=None, monitor_kwargs=None, wrapper_kwargs=None):
@@ -97,11 +97,11 @@ def make_env(rank, seed = 0, monitor_dir=None, wrapper_class=None, monitor_kwarg
 
 if __name__ == '__main__':
 
-    run = wandb.init(
-        project="RL_factory",
-        config=CONFIG,
-        sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
-    )
+    # run = wandb.init(
+    #     project="RL_factory",
+    #     config=CONFIG,
+    #     sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
+    # )
 
     seed = np.random.randint(0, 1000)
     env = DummyVecEnv([make_env(i, seed=seed) for i in range(CONFIG['n_envs'])])
@@ -120,18 +120,18 @@ if __name__ == '__main__':
                 # learning_starts=5000,
                 # buffer_size=50000,
                 verbose=1,
-                tensorboard_log=f"runs/{run.id}"
+                # tensorboard_log=f"runs/{run.id}"
     )
 
     # model = RecurrentPPO("MlpLstmPolicy", env, verbose=1, tensorboard_log=f"runs/{run.id}")
 
     model.learn(total_timesteps=CONFIG['total_timesteps'],
         progress_bar=True,
-        callback=WandbCallback(
-            model_save_freq=100,
-            model_save_path=f"models/{run.id}",
-        )
+        # callback=WandbCallback(
+        #     model_save_freq=100,
+        #     model_save_path=f"models/{run.id}",
+        # )
     )
 
-    run.finish()
+    # run.finish()
 

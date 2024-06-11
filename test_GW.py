@@ -39,9 +39,10 @@ current_directory = os.getcwd()
 
 if __name__ == '__main__':
 
-    models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}
+    # models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}
     # models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
-
+    models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
+                    'GW': f'{current_directory}/Simple_Shapes_RL/GW_trad_cont_y9ulscdz/checkpoints/epoch=99-step=195400.ckpt'}
     env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=CONFIG['mode'], model_path=models_path)
     env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
     env = NRepeat(env, num_frames=CONFIG['n_repeats'])
@@ -56,11 +57,8 @@ if __name__ == '__main__':
 
     obs_array = np.zeros((50000, 12))
     for i in range(50000):
-        action, _states = model.predict(obs[0])  # VecEnv --> list Env if more than one
-        obs, reward, done, info = env.step(np.array([action]))  # VecEnv --> list Env if more than one
+        obs = env.reset()  # VecEnv --> list Env if more than one
         obs_array[i, :] = obs[0][0]
-        if done:
-            obs = env.reset()
 
     print(np.max(obs_array))
     print(np.min(obs_array))

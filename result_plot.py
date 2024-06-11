@@ -80,7 +80,7 @@ if __name__ == '__main__':
     if PATH.split('/')[-2] == 'inference':
         fig, axs = plt.subplots(2, layout="constrained")
         j = 0
-        folders = ['attr', 'v', 'GWattr', 'GWv', 'CLIPattr', 'CLIPv']
+        folders = ['attr', 'v', 'GWattr', 'GWv'] #, 'CLIPattr', 'CLIPv']
         # folders = ['GWattr']
         for folder in folders:
             path = 'results/inference/' + folder + '/'
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         fig.tight_layout()
         fig.subplots_adjust(bottom=0.15)
         # plt.show()
-        plt.savefig("/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/results/inference/results.pdf", format="pdf")
+        plt.savefig("/home/leopold/Documents/Projets/Arena/RL/RL_Simple_Shapes/results/inference/results.pdf", format="pdf")
         print('done')
 
     else:
