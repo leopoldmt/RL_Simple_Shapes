@@ -9,7 +9,12 @@ import torch
 import numpy as np
 import os
 
+from bim_gw.modules.domain_modules import VAE
+from bim_gw.modules.domain_modules.simple_shapes import SimpleShapesAttributes
+from bim_gw.modules import GlobalWorkspace
+
 from Simple_Shapes_RL.Env import Simple_Env
+from Simple_Shapes_RL.gw_wrapper import GWWrapper
 
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
@@ -44,7 +49,7 @@ NORM_GW_CONT = {'mean': np.array([0.011346655145489494,
 
 
 CONFIG = {
-    "mode": "GW_vision",
+    "mode": "gw_v",
     "model": "PPO",
     "normalize": NORM_GW_CONT,
     "task": "position_rotation",
@@ -56,27 +61,32 @@ CONFIG = {
     'checkpoint': 'ht3ebgdl'
 }
 
-MODE = {'attributes': ['attributes'],
-        'vision': ['vision'],
-        'GW_attributes': ['GW_attributes', 'GW_vision'],
-        'GW_vision': ['GW_vision', 'GW_attributes']
+MODE = {'attr': ['attr'],
+        'v': ['v'],
+        'gw_attr': ['gw_attr', 'gw_v'],
+        'gw_v': ['gw_v', 'gw_attr']
         }
 
-MODE_PATH = {'attributes': 'attr', 'vision': 'v', 'GW_attributes': 'CLIPattr', 'GW_vision': 'CLIPv'}
+MODE_PATH = {'attr': 'attr', 'v': 'v', 'gw_attr': 'CLIPattr', 'gw_v': 'CLIPv'}
 
 current_directory = os.getcwd()
-
-
+    
 if __name__ == '__main__':
 
     # models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'}
-    models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
-                   'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}
+    models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/checkpoints/VAE_ckpt/epoch=282-step=1105680.ckpt',
+                   'GW': f'{current_directory}/Simple_Shapes_RL/checkpoints/GW_cont_ckpt/checkpoints/epoch=97-step=191492.ckpt'}
     # models_path = {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt',
     #                'GW': f'{current_directory}/Simple_Shapes_RL/GW_trad_cont_xmkeoe5m/checkpoints/epoch=99-step=195400.ckpt'}
 
+    vae = VAE.load_from_checkpoint(models_path['VAE'], strict=False).eval().to("cuda:0")
+    domains = {'v': vae.eval(), 'attr': SimpleShapesAttributes(32).eval()}
+    gw = GlobalWorkspace.load_from_checkpoint(models_path['GW'], domain_mods=domains, strict=False).eval().to("cuda:0")
+    gw_model = {'VAE': vae, 'GW': gw}
+
     for mode in MODE[CONFIG['mode']]:
-        env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=mode, model_path=models_path, normalize=CONFIG['normalize'])
+        env = Simple_Env(render_mode=None)
+        env = GWWrapper(env, model=gw_model, mode=mode)
         env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
         env = NRepeat(env, num_frames=CONFIG['n_repeats'])
         env = FrameStack(env, 4)
@@ -104,6 +114,9 @@ if __name__ == '__main__':
                 len_episode = 0
                 total_reward = 0
                 obs = env.reset()
+        
+        if not os.path.exists(current_directory + f"/results/inference/{MODE_PATH[CONFIG['mode']]}/"): 
+            os.makedirs(current_directory + f"/results/inference/{MODE_PATH[CONFIG['mode']]}/") 
 
         np.save(current_directory + f"/results/inference/{MODE_PATH[CONFIG['mode']]}/reward_{MODE_PATH[mode]}_from_{MODE_PATH[CONFIG['mode']]}_{CONFIG['checkpoint']}", reward_array)
         np.save(current_directory + f"/results/inference/{MODE_PATH[CONFIG['mode']]}/len_{MODE_PATH[mode]}_from_{MODE_PATH[CONFIG['mode']]}_{CONFIG['checkpoint']}", len_array)

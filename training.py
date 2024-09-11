@@ -110,8 +110,8 @@ if __name__ == '__main__':
     vae = VAE.load_from_checkpoint(CONFIG['models_path']['VAE'], strict=False).eval().to("cuda:0")
     domains = {'v': vae.eval(), 'attr': SimpleShapesAttributes(32).eval()}
     gw = GlobalWorkspace.load_from_checkpoint(CONFIG['models_path']['GW'], domain_mods=domains, strict=False).eval().to("cuda:0")
-    model = {'v': vae, 'GW': gw}
-    env = DummyVecEnv([make_env(i, seed=seed, model=model) for i in range(CONFIG['n_envs'])])
+    gw_model = {'VAE': vae, 'GW': gw}
+    env = DummyVecEnv([make_env(i, seed=seed, model=gw_model) for i in range(CONFIG['n_envs'])])
 
     model = PPO('MlpPolicy',
                 env,
