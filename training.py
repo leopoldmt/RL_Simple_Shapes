@@ -1,6 +1,4 @@
 from stable_baselines3 import PPO
-from stable_baselines3 import DDPG
-from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import set_random_seed
@@ -13,7 +11,12 @@ import numpy as np
 import wandb
 from wandb.integration.sb3 import WandbCallback
 
+from bim_gw.modules.domain_modules import VAE
+from bim_gw.modules.domain_modules.simple_shapes import SimpleShapesAttributes
+from bim_gw.modules import GlobalWorkspace
+
 from Simple_Shapes_RL.Env import Simple_Env
+from Simple_Shapes_RL.gw_wrapper import GWWrapper
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[64, 64, 64], vf=[128, 128, 128])])
@@ -47,8 +50,8 @@ NORM_GW_CONT = {'mean': np.array([0.011346655145489494,
                 }
 
 CONFIG = {
-    "models_path": {'VAE': f'{current_directory}/Simple_Shapes_RL/822888/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/GW_cont_gvvjei42/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
-    "mode": "GW_attributes",
+    "models_path": {'VAE': f'{current_directory}/Simple_Shapes_RL/checkpoints/VAE_ckpt/epoch=282-step=1105680.ckpt', 'GW': f'{current_directory}/Simple_Shapes_RL/checkpoints/GW_cont_ckpt/checkpoints/epoch=97-step=191492.ckpt'}, # 'GW': '/home/leopold/Documents/Projets/Arena/RL/Simple_Shapes/Simple_Shapes_RL/xbyve6cr/checkpoints/epoch=96-step=189538.ckpt'},
+    "mode": "gw_attr",
     "model": "PPO",
     "task": "position_rotation",
     "normalize": NORM_GW_CONT,
@@ -70,9 +73,10 @@ CONFIG = {
     'n_envs': 2,
 }
 
-def make_env(rank, seed = 0, monitor_dir=None, wrapper_class=None, monitor_kwargs=None, wrapper_kwargs=None):
+def make_env(rank, seed = 0, model=None, monitor_dir=None, wrapper_class=None, monitor_kwargs=None, wrapper_kwargs=None):
     def _init():
-        env = Simple_Env(render_mode=None, task=CONFIG['task'], obs_mode=CONFIG['mode'], target_mode=CONFIG['target'], model_path=CONFIG['models_path'])
+        env = Simple_Env(render_mode=None)
+        env = GWWrapper(env, model=model, mode=CONFIG['mode'])
         env = TimeLimit(env, max_episode_steps=CONFIG['episode_len'])
         env = NRepeat(env, num_frames=CONFIG['n_repeats'])
         env = FrameStack(env, 4)
@@ -103,7 +107,11 @@ if __name__ == '__main__':
     # )
 
     seed = np.random.randint(0, 1000)
-    env = DummyVecEnv([make_env(i, seed=seed) for i in range(CONFIG['n_envs'])])
+    vae = VAE.load_from_checkpoint(CONFIG['models_path']['VAE'], strict=False).eval().to("cuda:0")
+    domains = {'v': vae.eval(), 'attr': SimpleShapesAttributes(32).eval()}
+    gw = GlobalWorkspace.load_from_checkpoint(CONFIG['models_path']['GW'], domain_mods=domains, strict=False).eval().to("cuda:0")
+    model = {'v': vae, 'GW': gw}
+    env = DummyVecEnv([make_env(i, seed=seed, model=model) for i in range(CONFIG['n_envs'])])
 
     model = PPO('MlpPolicy',
                 env,
@@ -121,8 +129,6 @@ if __name__ == '__main__':
                 verbose=1,
                 # tensorboard_log=f"runs/{run.id}"
     )
-
-    # model = RecurrentPPO("MlpLstmPolicy", env, verbose=1, tensorboard_log=f"runs/{run.id}")
 
     model.learn(total_timesteps=CONFIG['total_timesteps'],
         progress_bar=True,

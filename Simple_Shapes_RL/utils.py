@@ -36,26 +36,18 @@ class NRepeat(gym.Wrapper):
 NB_OBS = {'attributes': 9, 'vision': 12, 'GW': 12}
 
 
-def get_obs_space(obs_mode, target_mode):
-    if target_mode[0] == 'fixed':
-        if obs_mode == 'attributes':
-            # return spaces.Box(low=np.array([0, -32, -32, 7, -1, -1, 0, 0, 0]), high=np.array([2, 32, 32, 14, 1, 1, 255, 255, 255]))
-            return spaces.Box(low=float('-inf'), high=float('inf'), shape=(11,))
-        elif obs_mode == 'vision':
-            return spaces.Box(low=-float('inf'), high=float('inf'), shape=(12,))
-        elif obs_mode == 'GW':
-            return spaces.Box(low=-float('inf'), high=float('inf'), shape=(12,))
-    elif target_mode[0] == 'random':
-        if obs_mode == 'attributes':
-            if target_mode[1] == 'attributes':
-                return spaces.Box(low=np.array([0, -32, -32, 7, -1, -1, 0, 0, 0, 0, -32, -32, 7, -1, -1, 0, 0, 0]), high=np.array([2, 32, 32, 14, 1, 1, 255, 255, 255, 2, 32, 32, 14, 1, 1, 255, 255, 255]))
-            else:
-                return spaces.Box(low=-float('inf'), high=float('inf'), shape=(NB_OBS[obs_mode]+NB_OBS[target_mode[1]],))
-        else:
-            return spaces.Box(low=-float('inf'), high=float('inf'), shape=(NB_OBS[obs_mode]+NB_OBS[target_mode[1]],))
+def get_obs_space(obs_mode):
+    if obs_mode == 'dict':
+        return spaces.Dict({'attr': spaces.Box(low=np.array([0, -32, -32, 7, -1, -1, 0, 0, 0]), high=np.array([2, 32, 32, 14, 1, 1, 255, 255, 255])),
+                            'v': spaces.Box(low=0, high=255, shape=(32,32,3))
+                })
+    elif obs_mode == 'attributes':
+        return spaces.Box(low=-1, high=1, shape=(11,))
+    elif obs_mode == 'vision':
+        return spaces.Box(low=0, high=255, shape=(32,32,3))
 
 
-def get_action_space(task):
+def get_action_space():
     return spaces.Discrete(7)
 
 
