@@ -1,0 +1,22 @@
+models_path: 
+  VAE: ${SS_PATH}/Simple_Shapes_RL/checkpoints/VAE_ckpt/epoch=282-step=1105680.ckpt
+  GW:  ${SS_PATH}/Simple_Shapes_RL/checkpoints/GW_cont_ckpt/checkpoints/epoch=97-step=191492.ckpt
+mode: "gw_attr"
+model: "PPO"
+normalize: Null
+total_timesteps: 1e7
+shape: "(16,16)"
+target: "random_GW_attributes"
+episode_len: 100
+n_steps: 16384
+num_epochs: 15
+mini_batch_size: 512
+lr: 3e-4
+policy_kwargs: Null
+gamma: 0.9
+gae_lambda: 0.95
+target_kl: Null
+vf_coef: 0.5
+ent_coef: 0.
+n_repeats: 1
+n_envs: 2
