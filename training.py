@@ -18,7 +18,7 @@ from bim_gw.modules.domain_modules.simple_shapes import SimpleShapesAttributes
 from bim_gw.modules import GlobalWorkspace
 
 from Simple_Shapes_RL.Env import Simple_Env
-from Simple_Shapes_RL.gw_wrapper import GWWrapper
+from Simple_Shapes_RL.gw_wrapper import GWWrapper, NormWrapper
 
 policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[64, 64, 64], vf=[128, 128, 128])])
@@ -26,37 +26,11 @@ policy_kwargs = dict(activation_fn=torch.nn.ReLU,
 current_directory = os.getcwd()
 os.environ["SS_PATH"] = os.getcwd()
 
-NORM_GW_CONT = {'mean': np.array([0.011346655145489494,
-                                  0.018906326077828415,
-                                  0.0076558825294987766,
-                                  0.01374020448433468,
-                                  -0.0017686202570563181,
-                                  -0.0017319813413190423,
-                                  0.018027108799475826,
-                                  -0.0032386721732508158,
-                                  0.0118084945299651,
-                                  0.0192551973626361,
-                                  0.010257933979583323,
-                                  0.006335173079147935]),
-                'std': np.array([0.0564022526881355,
-                                 0.10165699320007751,
-                                 0.05140064675555506,
-                                 0.07199728651151278,
-                                 0.05974908398748707,
-                                 0.058614378146887865,
-                                 0.1330258990665705,
-                                 0.053615264789259556,
-                                 0.0524300244234034,
-                                 0.08749223974877422,
-                                 0.05585023656551657,
-                                 0.09937382650123902] / np.sqrt(0.01))
-                }
-
-
 def make_env(rank, seed = 0, model=None, config=None, monitor_dir=None, wrapper_class=None, monitor_kwargs=None, wrapper_kwargs=None):
     def _init():
         env = Simple_Env(render_mode=None)
         env = GWWrapper(env, model=model, mode=config['mode'])
+        env = NormWrapper(env, norm=config['normalize'])
         env = TimeLimit(env, max_episode_steps=config['episode_len'])
         env = NRepeat(env, num_frames=config['n_repeats'])
         env = FrameStack(env, 4)
@@ -106,7 +80,7 @@ if __name__ == '__main__':
     #     sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
     # )
 
-    with open('cfg.yaml', encoding="utf-8") as f:
+    with open('cfg/cfg_train.yaml', encoding="utf-8") as f:
         config = yaml.full_load(f)
 
     seed = np.random.randint(0, 1000)

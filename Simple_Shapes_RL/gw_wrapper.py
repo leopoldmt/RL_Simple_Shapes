@@ -46,3 +46,18 @@ class GWWrapper(ObservationWrapper):
             img = self.model['VAE'].encode({'img': img_tensor})['z_img'].detach()[0]
             img_gw = self.model['GW'].encode({'z_img': img}, 'v').detach().cpu().numpy()
             return img_gw
+        
+
+class NormWrapper(ObservationWrapper):
+    def __init__(self, env, norm):
+        super().__init__(env)
+        self.norm = norm
+
+    def observation(self, obs):
+        return self._norm(obs, self.norm)
+     
+    def _norm(self, obs, norm):
+        if norm == None:
+            return obs
+        else:
+            return (obs - np.array(norm['mean'])) / np.array(norm['std'])
