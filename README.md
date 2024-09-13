@@ -17,63 +17,83 @@ pip install -e .
 pip install git+https://github.com/porthok/RL_Simple_Shapes.git
 ```
 
-## Scripts
+# Environment
 
-## Environment
+This environment was implemented in the context of <b>Zero-shot cross-modal transfer of Reinforcement Learning policies through a Global Workspace</b> paper.
 
-## Simple Shapes
+The environment is composed of a a shape contain in a 32x32 image. The images contain one shape (among a triangle, an "egg", and a "diamond") possessing different attributes:
 
-## Checkpoints
+* a size
+* a location (x, y)
+* a rotation
+* a color
 
-## Structure
+The goal of the agent is to place the shape at the center of the image pointing to the top. 
 
-This repo contains the library containing the modules, dataset and dataloader,
-and the scripts used to train,
-evaluate and use the model.
+![General illustration of the Simple Shapes environment ](media/SS_env.png)
 
-The scripts are in the `scripts` folder.
-The scripts use the configuration files, but they can be overridden using CLI
-args:
+## Action
+The shape can only translate or rotate at each time step. This leads to 6 different possible actions:
+* Goes up by one pixel
+* Goes down by one pixel
+* Goes right by one pixel
+* Goes left by one pixel
+* Rotate right by an angle of $\frac{\pi}{32}$
+* Rotate left by an angle of $\frac{\pi}{32}$
 
-```
-python train.py "max_epochs=2" "global_workspace.batch_size=512"
-```
+## Observation
+This environment is made to be multimodal. By default, the it returns a dictionary composed of two modalities: `{'attr': attributes, 'v': image}`. But can also return only one of the two if specified.
 
-# Dataset
-## Simple Shapes
-Download link: [https://zenodo.org/record/8112838](https://zenodo.org/record/8112838).
+### attributes
+The attributes represent the state of the environment. It is a vector composed of 9 float for the different attributes of the shape.
+* shape's class: 0 for diamond, 1 for egg, 2 for triangle
+* x position $\in[0,32]$
+* y position $\in[0,32]$
+* size $\in[0,14]$
+* cosinus of the rotation -1 and 1 $\in[-1,1]$
+* sinus of the rotation -1 and 1 $\in[-1,1]$
+* the RGB color $\in[0,255]^{3}$
 
-This is the main dataset of the project. It can be
-generated using the `create_shape_dataset.py`
-script.
+`
+spaces.Dict({
+'attr': spaces.Box(low=np.array([0, -32, -32, 7, -1, -1, 0, 0, 0]), high=np.array([2, 32, 32, 14, 1, 1, 255, 255, 255])),
+'v': spaces.Box(low=0, high=255, shape=(32,32,3))})
+`
 
-![Some validation examples of the shapes dataset](images/shapes_dataset.png)
+### image
+The visual part is a 32x32 RGB image between 0 and 255 like the following ones
+![Some validation examples of the shapes dataset](media/shape_0.png)
+![Some validation examples of the shapes dataset](media/shape_1.png)
+![Some validation examples of the shapes dataset](media/shape_2.png)
 
-The dataset comprises 32x32 images. The images contain one shape (among a
-triangle, an "egg", and a "diamond")
-possessing different attributes:
+# Link with the Global Workspace
 
-- a size
-- a location (x, y)
-- a rotation
-- a color
+This environment was created to evaluate the model introduced by this paper: Semi-supervised multimodal representation learning through a global workspace.
 
-# The model
+A wrapper allows to use this model to encode the observation through it.
 
 The model contains uni-modal modules which are pretrained:
 
 - a VAE for the visual domain: available in `checkpoints/vae_v.ckpt`,
-- the language model: available in `checkpoints/vae_t.ckpt`.
+- the attribute model which doesn't requires any learning.
 
-![Diagram of the model](images/model.png)
+## Checkpoints
 
-To retrain each modality, use the corresponding training script:
+# Scripts
 
-- `train_vae.py` for the VAE,
-- `train_lm.py` for the language model.
+Different scripts are already written to play with this environment.
 
-Once the uni-modal modules have been train, one can save the latent vectors for
-the dataset to speed up the training
-of the full model using `save_unimodal_latents.py` script.
+* `train.py`
+* `test.py`
+* `visualisation.py`
 
-To train the global workspace, use the `train.py` script.
+# Structure
+
+
+# Citation
+Please ensure proper citations when incorporating this work into your projects.
+
+```bibtex
+@article{
+}
+```
