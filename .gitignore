@@ -2,6 +2,7 @@
 results/
 runs/
 wandb/
+models/
 Simple_Shapes_RL/models/
 Simple_Shapes_RL/82888
 Simple_Shapes_RL/GW_cont_gvvjei42

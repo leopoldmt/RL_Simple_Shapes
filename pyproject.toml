@@ -10,8 +10,10 @@ authors = [
 ]
 dependencies = [
     "bim-gw @ git+https://github.com/bdvllrs/bimGW.git@master",
+    "auto-sbatch @ git+https://github.com/bdvllrs/auto-sbatch@master",
     "gymnasium == 0.29.1",
     "stable-baselines3 == 2.2.1"
+    "wandb" == 0.12.4"
 ]
 requires-python = "==3.10.12"
 
